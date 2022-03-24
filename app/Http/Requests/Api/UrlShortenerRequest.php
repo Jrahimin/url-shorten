@@ -29,7 +29,7 @@ class UrlShortenerRequest extends FormRequest
         Log::debug("Url request data".json_encode($this->all()));
 
         return [
-            'url' => 'required|string',
+            'url' => 'required|url',
         ];
     }
 }

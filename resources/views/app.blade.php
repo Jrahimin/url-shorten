@@ -9,30 +9,21 @@
 </head>
 <body>
 <div id="app">
-    <div class="col-md-6 offset-2 mt-5">
-        <form>
-            <div class="form-group">
-                <label for="url">URL</label>
-                <input type="text" class="form-control" v-model="url">
-            </div>
-            <br/>
-            <button type="submit" class="btn btn-primary">Shorten</button>
-        </form>
-    </div>
+    <url-shortener></url-shortener>
 </div>
 <script src="{{ mix('js/app.js') }}" type="text/javascript"></script>
 
-<script>
+{{--<script>
     export default {
         data() {
             return {
-                product: {}
+                url: null
             }
         },
         methods: {
             shortenUrl() {
                 this.axios
-                    .post('http://localhost:8000/api/shorten-url', this.product)
+                    .post('http://localhost:8000/api/shorten-url', this.url)
                     .then(response => {
                         console.log(response.data);
                     })
@@ -42,6 +33,6 @@
             }
         }
     }
-</script>
+</script>--}}
 </body>
 </html>

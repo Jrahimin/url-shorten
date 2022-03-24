@@ -53,7 +53,7 @@ class UrlShortenerController extends Controller
         try{
             $response = $this->urlShortenerService->shortenUrl($request);
 
-            return $this->handleResponse($response, "Url has been shortened successfully");
+            return $this->handleResponse($response, "Url has been shortened successfully",true);
         } catch (\Exception $e){
             Log::error('Found Exception: ' . $e->getMessage() . ' [Script: ' . __CLASS__.'@'.__FUNCTION__ . '] [Origin: ' . $e->getFile() . '-' . $e->getLine() . ']');
 

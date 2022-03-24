@@ -9,8 +9,12 @@ use Illuminate\Support\Facades\Log;
 
 class UrlShortenerService
 {
+    protected $exceptionMessage;
+    protected $exceptionStatus;
+    protected $characters;
     public function __construct()
     {
+        $this->characters = "abcdfghjkmnpqrstvwxyz|ABCDFGHJKLMNPQRSTVWXYZ|0123456789";
         $this->exceptionMessage = "Something went wrong. Please try again later.";
         $this->exceptionStatus = 500;
     }
@@ -19,12 +23,7 @@ class UrlShortenerService
         $response = new CommonResponseEntity();
         $response->status = 422;
         try {
-            $reqUrl = stripslashes(trim($_REQUEST['longurl']));
-
-            if(!preg_match('|^[0-9a-zA-Z]{1,6}$|', $reqUrl)){
-                $response->errorMessage = "This is not a valid URL";
-                return $response;
-            }
+            $reqUrl = stripslashes(trim($request->url));
 
             $prevUrl = UrlRequest::where('request_url', $reqUrl)->first();
             if($prevUrl){
@@ -32,6 +31,7 @@ class UrlShortenerService
                 return $response;
             }
 
+            $response->data = $this->generateRandomValue();
             $response->status = 200;
             return $response;
         } catch (\Throwable $ex) {
@@ -41,5 +41,20 @@ class UrlShortenerService
 
             return $response;
         }
+    }
+
+    public function generateRandomValue()
+    {
+        $charSet = "abcdefghijklmnpqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ123456789";
+        $randStr = [];
+        for ($i = 0; $i < 6; $i ++)
+        {
+            $randStr[] = $charSet[rand(0, (strlen($charSet) - 1))];
+        }
+
+        $randStrSerial = implode('', $randStr);
+        $randStr = str_shuffle($randStrSerial);
+
+        return $randStr;
     }
 }

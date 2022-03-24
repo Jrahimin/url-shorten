@@ -17,6 +17,7 @@ class CreateUrlRequestsTable extends Migration
             $table->id();
             $table->string('request_url');
             $table->string('shorten_url');
+            $table->string('hash_code');
             $table->boolean('is_safe')->nullable();
             $table->timestamps();
         });
