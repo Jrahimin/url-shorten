@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\UrlShortenerController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,3 +17,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('app');
 });
+
+Route::get('/{shortCode}', [UrlShortenerController::class, 'getFullUrlFromCodeAndRedirect']);
+Route::get('/{subDomain}/{shortCode}', [UrlShortenerController::class, 'getFullUrlFromCodeDomainAndRedirect']);

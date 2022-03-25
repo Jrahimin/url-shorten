@@ -6,7 +6,7 @@ use App\Http\Traits\ValidationResponseTrait;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Log;
 
-class UrlShortenerRequest extends FormRequest
+class GetFullUrlRequest extends FormRequest
 {
     use ValidationResponseTrait;
     /**
@@ -27,7 +27,7 @@ class UrlShortenerRequest extends FormRequest
     public function rules()
     {
         return [
-            'url' => 'required|url',
+            'short_url' => 'required|exists:url_requests,shorten_url',
         ];
     }
 }

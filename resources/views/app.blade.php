@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" value="{{ csrf_token() }}" />
-    <title>Vue JS CRUD Operations in Laravel</title>
+    <title>URL Shortener</title>
     <link href="{{ mix('css/app.css') }}" type="text/css" rel="stylesheet" />
 </head>
 <body>
@@ -12,27 +12,5 @@
     <url-shortener></url-shortener>
 </div>
 <script src="{{ mix('js/app.js') }}" type="text/javascript"></script>
-
-{{--<script>
-    export default {
-        data() {
-            return {
-                url: null
-            }
-        },
-        methods: {
-            shortenUrl() {
-                this.axios
-                    .post('http://localhost:8000/api/shorten-url', this.url)
-                    .then(response => {
-                        console.log(response.data);
-                    })
-                    .catch(err => {
-                        console.log(err);
-                    })
-            }
-        }
-    }
-</script>--}}
 </body>
 </html>

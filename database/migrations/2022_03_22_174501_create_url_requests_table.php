@@ -15,10 +15,10 @@ class CreateUrlRequestsTable extends Migration
     {
         Schema::create('url_requests', function (Blueprint $table) {
             $table->id();
-            $table->string('request_url');
-            $table->string('shorten_url');
-            $table->string('hash_code');
-            $table->boolean('is_safe')->nullable();
+            $table->text('request_url');
+            $table->boolean('is_safe');
+            $table->string('shorten_url')->nullable();
+            $table->string('short_code',6)->nullable();
             $table->timestamps();
         });
     }

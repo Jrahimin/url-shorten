@@ -19,4 +19,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::apiResource('shorten-url',UrlShortenerController::class);
+Route::post('shorten-url',[UrlShortenerController::class, 'store']);
+Route::post('full-url',[UrlShortenerController::class, 'getFullUrl']);

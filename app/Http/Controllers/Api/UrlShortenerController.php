@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\GetFullUrlRequest;
 use App\Http\Requests\Api\UrlShortenerRequest;
 use App\Http\Traits\ApiResponseTrait;
+use App\Models\UrlRequest;
 use App\Services\UrlShortenerService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class UrlShortenerController extends Controller
@@ -15,31 +16,14 @@ class UrlShortenerController extends Controller
 
     protected $urlShortenerService;
     protected $exceptionMessage;
+    protected $baseUrl;
 
     public function __construct(UrlShortenerService $urlShortenerService)
     {
         $this->urlShortenerService = $urlShortenerService;
+        $this->baseUrl = "shorturl.com/";
 
         $this->exceptionMessage = "Something went wrong. Please try again later.";
-    }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function index()
-    {
-        try{
-            $response = $this->campaignService->getCampaigns();
-
-            Log::debug("campaign list response in controller: ".json_encode($response));
-
-            return $this->handleResponse($response, "Campaign list is fetched",true);
-        } catch (\Exception $e){
-            Log::error('Found Exception: ' . $e->getMessage() . ' [Script: ' . __CLASS__.'@'.__FUNCTION__ . '] [Origin: ' . $e->getFile() . '-' . $e->getLine() . ']');
-
-            return $this->invalidResponse($this->exceptionMessage,500);
-        }
     }
 
     /**
@@ -52,8 +36,9 @@ class UrlShortenerController extends Controller
     {
         try{
             $response = $this->urlShortenerService->shortenUrl($request);
+            $message = $response->message ?? "Url has been shortened successfully.";
 
-            return $this->handleResponse($response, "Url has been shortened successfully",true);
+            return $this->handleResponse($response, $message,true);
         } catch (\Exception $e){
             Log::error('Found Exception: ' . $e->getMessage() . ' [Script: ' . __CLASS__.'@'.__FUNCTION__ . '] [Origin: ' . $e->getFile() . '-' . $e->getLine() . ']');
 
@@ -61,20 +46,13 @@ class UrlShortenerController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function show($id)
+    public function getFullUrl(GetFullUrlRequest $request)
     {
         try{
-            $response = $this->campaignService->getCampaigns($id);
+            $response = $this->urlShortenerService->getFullUrl($request);
+            $message = $response->message ?? "Full Url is fetched successfully. Redirecting...";
 
-            Log::debug("campaign response in controller: ".json_encode($response));
-
-            return $this->handleResponse($response, "Campaign is fetched",true);
+            return $this->handleResponse($response, $message,true);
         } catch (\Exception $e){
             Log::error('Found Exception: ' . $e->getMessage() . ' [Script: ' . __CLASS__.'@'.__FUNCTION__ . '] [Origin: ' . $e->getFile() . '-' . $e->getLine() . ']');
 
@@ -82,57 +60,16 @@ class UrlShortenerController extends Controller
         }
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function update(UrlShortenerRequest $request, Campaign $campaign)
+    public function getFullUrlFromCodeAndRedirect($shortCode)
     {
-        try{
-            $response = $this->campaignService->updateCampaign($request, $campaign);
-
-            Log::debug("campaign update response in controller: ".json_encode($response));
-
-            return $this->handleResponse($response, "Campaign is updated",false);
-        } catch (\Exception $e){
-            Log::error('Found Exception: ' . $e->getMessage() . ' [Script: ' . __CLASS__.'@'.__FUNCTION__ . '] [Origin: ' . $e->getFile() . '-' . $e->getLine() . ']');
-
-            return $this->invalidResponse($this->exceptionMessage,500);
-        }
+        $prevUrl = UrlRequest::where('short_code', $shortCode)->firstOrFail();
+        return redirect($prevUrl->request_url);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function destroy($id)
+    public function getFullUrlFromCodeDomainAndRedirect($subDomain, $shortCode)
     {
-        try{
-            $response = $this->campaignService->deleteUpload($id);
-
-            return $this->handleResponse($response, "Campaign file has been deleted successfully");
-        } catch (\Exception $e){
-            Log::error('Found Exception: ' . $e->getMessage() . ' [Script: ' . __CLASS__.'@'.__FUNCTION__ . '] [Origin: ' . $e->getFile() . '-' . $e->getLine() . ']');
-
-            return $this->invalidResponse($this->exceptionMessage,500);
-        }
-    }
-
-    public function storeUploads(Request $request)
-    {
-        try{
-            $response = $this->campaignService->addCampaignUploads($request);
-
-            return $this->handleResponse($response, "Campaign files been added successfully");
-        } catch (\Exception $e){
-            Log::error('Found Exception: ' . $e->getMessage() . ' [Script: ' . __CLASS__.'@'.__FUNCTION__ . '] [Origin: ' . $e->getFile() . '-' . $e->getLine() . ']');
-
-            return $this->invalidResponse($this->exceptionMessage,500);
-        }
+        $url = request()->getHttpHost()."/{$subDomain}/".$shortCode;
+        $prevUrl = UrlRequest::where('shorten_url', $url)->firstOrFail();
+        return redirect($prevUrl->request_url);
     }
 }

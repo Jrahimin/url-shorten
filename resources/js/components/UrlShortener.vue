@@ -1,16 +1,14 @@
 <template>
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-10">
-                <div class="col-md-6 offset-2 mt-5">
-                    <form @submit.prevent="shortenUrl">
-                        <div class="form-group">
-                            <label for="url">URL</label>
-                            <input type="text" class="form-control" id="url" v-model="url">
-                        </div>
-                        <br/>
-                        <button type="submit" class="btn btn-primary">Shorten</button>
-                    </form>
+            <div class="col-md-12 mt-5">
+                <div class="row">
+                    <div class="col-md-6">
+                        <shorten></shorten>
+                    </div>
+                    <div class="col-md-4">
+                        <redirect></redirect>
+                    </div>
                 </div>
             </div>
         </div>
@@ -18,23 +16,9 @@
 </template>
 
 <script>
+import Redirect from "./Redirect";
+import Shorten from "./Shorten";
 export default {
-    data() {
-        return {
-            url: ""
-        }
-    },
-    methods: {
-        shortenUrl() {
-            this.axios
-                .post('http://localhost:8000/api/shorten-url', {url:this.url})
-                .then(response => {
-                    console.log(response.data);
-                })
-                .catch(err => {
-                    console.log(err);
-                })
-        }
-    }
+    components: {Shorten, Redirect},
 }
 </script>
